@@ -1,17 +1,27 @@
 package csv
 
+import org.apache.commons.csv.{ CSVFormat, CSVParser, CSVRecord }
+
+import scala.jdk.CollectionConverters._
+
 import cats.effect.{ IO, Resource }
-import scala.io.BufferedSource
 
 object Reader {
   // Using Resource so I don't forget about closing the file
-  def loadFromResource(name: String): Resource[IO, BufferedSource] =
+  def loadFromResource(name: String, headers: List[String]): Resource[IO, CSVParser] =
     Resource.make(
-      IO.blocking(io.Source.fromResource(name))
-    )(source =>
-      IO.blocking(source.close())
+      IO.blocking(
+        CSVFormat.DEFAULT.builder()
+          .setHeader(headers: _*)
+          .setSkipHeaderRecord(true)
+          .setNullString("")
+          .build()
+          .parse(io.Source.fromResource(name).bufferedReader())
+      )
+    )(parser =>
+      IO.blocking(parser.close())
     )
 
-  def parseLines(source: BufferedSource, headers: Boolean = true, delimiter: String = ","): Iterator[Array[String]] =
-    source.getLines().drop(if (headers) 1 else 0).map(_.split(","))
+  def lines(parser: CSVParser): Iterator[CSVRecord] =
+    parser.iterator().asScala
 }

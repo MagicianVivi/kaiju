@@ -1,20 +1,34 @@
 package csv
 
-import data.{ Continent, Profession }
+import org.apache.commons.csv.CSVRecord
+
 import scala.util.control.NonFatal
 
+import data.{ Continent, Job, Profession }
+
 object Decoders {
-  def toContinentTuple(line: Array[String]): (String, Continent.Latitudes, Continent.Longitudes) =
+  def toContinentTuple(line: CSVRecord): (String, Continent.Latitudes, Continent.Longitudes) =
     decoderHelper(line, line => (
-      line(0),
-      Continent.Latitudes(line(3).toDouble, line(1).toDouble),
-      Continent.Longitudes(line(4).toDouble, line(2).toDouble)
+      line.get("continent"),
+      Continent.Latitudes(line.get("east").toDouble, line.get("west").toDouble),
+      Continent.Longitudes(line.get("north").toDouble, line.get("south").toDouble)
     ))
 
-  def toProfession(line: Array[String]): Profession =
-    decoderHelper(line, line => Profession(line(0).toInt, line(1), line(2)))
+  def toProfession(line: CSVRecord): Profession =
+    decoderHelper(line, line => Profession(line.get("id").toInt, line.get("name"), line.get("category_name")))
 
-  private def decoderHelper[A](line: Array[String], func: Array[String] => A): A =
+  def toJob(line: CSVRecord): Job =
+    decoderHelper(line, line =>
+      Job(
+        Option(line.get("profession_id")).map(_.toInt),
+        line.get("contract_type"),
+        line.get("name"),
+        Option(line.get("office_latitude")).map(_.toDouble),
+        Option(line.get("office_longitude")).map(_.toDouble)
+      )
+    )
+
+  private def decoderHelper[A](line: CSVRecord, func: CSVRecord => A): A =
     try {
       func(line)
     } catch {
