@@ -8,22 +8,22 @@ import cats.effect.{ IO, Resource }
 
 object Reader {
   // Using Resource so I don't forget about closing the file
-  def loadDatabase(db: Database): Resource[IO, CSVParser] =
+  private[csv] def loadFromResource(filename: String, headers: Seq[String]): Resource[IO, CSVParser] =
     Resource.make(
       IO.blocking(
         CSVFormat.DEFAULT.builder()
-          .setHeader(db.headers: _*)
+          .setHeader(headers: _*)
           // Skip first line in when parsing records
           .setSkipHeaderRecord(true)
           // Make sure we get a null when field is empty
           .setNullString("")
           .build()
-          .parse(io.Source.fromResource(db.filename).bufferedReader())
+          .parse(io.Source.fromResource(filename).bufferedReader())
       )
     )(parser =>
       IO.blocking(parser.close())
     )
 
-  def lines(parser: CSVParser): Iterator[CSVRecord] =
+  private[csv] def lines(parser: CSVParser): Iterator[CSVRecord] =
     parser.iterator().asScala
 }
