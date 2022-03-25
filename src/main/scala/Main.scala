@@ -3,19 +3,20 @@ package main
 import cats.effect.{ ExitCode, IO, IOApp }
 
 import data.{ Continent, Profession }
-import csv.Decoders
+
+import csv.{ Database, Decoder, Reader}
 
 object Main extends IOApp {
   def loadContinents(): IO[List[Continent]] =
-    csv.Reader.loadFromResource("continent-intervals.csv", List("continent", "west", "south", "east", "north")).use(resource =>
-      IO(csv.Reader.lines(resource).map(Decoders.toContinentTuple).toList
+    Reader.loadDatabase(Database.continents).use(resource =>
+      IO(Reader.lines(resource).map(Decoder.toContinentTuple).toList
         .groupMap { case (name, _, _) => name }{ case (_, lats, longs) => (lats, longs) }
         .foldLeft(List.empty[Continent]){ case (acc, (name, coordinates)) => Continent(name, coordinates)::acc })
     )
 
   def loadProfessions(): IO[List[Profession]] =
-    csv.Reader.loadFromResource("technical-test-professions.csv", List("id", "name", "category_name")).use(resource =>
-      IO(csv.Reader.lines(resource).map(Decoders.toProfession).toList)
+    Reader.loadDatabase(Database.professions).use(resource =>
+      IO(Reader.lines(resource).map(Decoder.toProfession).toList)
     )
 
   def updateCategory(currentCounts: Map[String, Int], category: String): Map[String, Int] = {
@@ -26,8 +27,8 @@ object Main extends IOApp {
   }
 
   def processJobs(continents: List[Continent], professions: List[Profession]): IO[Map[String, Map[String, Int]]] =
-    csv.Reader.loadFromResource("technical-test-jobs.csv", List("profession_id", "contract_type", "name", "office_latitude", "office_longitude")).use(resource =>
-      IO(csv.Reader.lines(resource).map(Decoders.toJob)
+    Reader.loadDatabase(Database.jobs).use(resource =>
+      IO(Reader.lines(resource).map(Decoder.toJob)
         .foldLeft(Map.empty[String, Map[String, Int]]){ case (acc, job) =>
           val continent = ((job.latitude, job.longitude) match {
             case (Some(latitude), Some(longitude)) =>

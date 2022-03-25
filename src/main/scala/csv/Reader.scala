@@ -8,15 +8,17 @@ import cats.effect.{ IO, Resource }
 
 object Reader {
   // Using Resource so I don't forget about closing the file
-  def loadFromResource(name: String, headers: List[String]): Resource[IO, CSVParser] =
+  def loadDatabase(db: Database): Resource[IO, CSVParser] =
     Resource.make(
       IO.blocking(
         CSVFormat.DEFAULT.builder()
-          .setHeader(headers: _*)
+          .setHeader(db.headers: _*)
+          // Skip first line in when parsing records
           .setSkipHeaderRecord(true)
+          // Make sure we get a null when field is empty
           .setNullString("")
           .build()
-          .parse(io.Source.fromResource(name).bufferedReader())
+          .parse(io.Source.fromResource(db.filename).bufferedReader())
       )
     )(parser =>
       IO.blocking(parser.close())

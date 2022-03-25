@@ -6,7 +6,7 @@ import scala.util.control.NonFatal
 
 import data.{ Continent, Job, Profession }
 
-object Decoders {
+object Decoder {
   def toContinentTuple(line: CSVRecord): (String, Continent.Latitudes, Continent.Longitudes) =
     decoderHelper(line, line => (
       line.get("continent"),
