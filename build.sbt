@@ -46,6 +46,7 @@ lazy val kaiju = (project in file("."))
     resolvers += Resolver.sonatypeRepo("releases"),
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-effect" % "3.3.8",
-      "org.apache.commons" % "commons-csv" % "1.9.0"
+      "org.apache.commons" % "commons-csv" % "1.9.0",
+      "org.scalatest" %% "scalatest" % "3.2.11" % "test"
     )
   )

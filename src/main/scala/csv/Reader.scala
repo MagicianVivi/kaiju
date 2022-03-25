@@ -8,7 +8,7 @@ import cats.effect.{ IO, Resource }
 
 object Reader {
   // Using Resource so I don't forget about closing the file
-  private[csv] def loadFromResource(filename: String, headers: Seq[String]): Resource[IO, CSVParser] =
+  private[csv] def loadFromResource(filename: String, headers: List[String]): Resource[IO, CSVParser] =
     Resource.make(
       IO.blocking(
         CSVFormat.DEFAULT.builder()
