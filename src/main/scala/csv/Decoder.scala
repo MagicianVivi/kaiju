@@ -7,11 +7,13 @@ import scala.util.control.NonFatal
 import data.{ Continent, Job, Profession }
 
 object Decoder {
-  private[csv] def toContinentTuple(line: CSVRecord): (String, Continent.Longitudes, Continent.Latitudes) =
+  private[csv] def toContinentTuple(line: CSVRecord): (String, Continent.GPSBox) =
     decoderHelper(line, line => (
       line.get("continent"),
-      Continent.Longitudes(line.get("east").toDouble, line.get("west").toDouble),
-      Continent.Latitudes(line.get("north").toDouble, line.get("south").toDouble)
+      Continent.GPSBox(
+        Continent.Bounds(line.get("east").toDouble, line.get("west").toDouble),
+        Continent.Bounds(line.get("north").toDouble, line.get("south").toDouble)
+      )
     ))
 
   private[csv] def toProfession(line: CSVRecord): Profession =

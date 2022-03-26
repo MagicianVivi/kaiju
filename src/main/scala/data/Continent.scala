@@ -2,23 +2,34 @@ package data
 
 final case class Continent(
   name: String,
-  boxes: List[(Continent.Longitudes, Continent.Latitudes)]
+  boxes: List[Continent.GPSBox]
 )
 
 object Continent {
-  final case class Longitudes(east: Double, west: Double)
-  final case class Latitudes(north: Double, south: Double)
+  final case class GPSBox(longitudes: Bounds, latitudes: Bounds)
 
-  def fromLines(lines: Iterator[(String, Longitudes, Latitudes)]): List[Continent] =
+  final class Bounds(val upper: Double, val lower: Double)
+
+  object Bounds {
+    def apply(upper: Double, lower: Double): Bounds = {
+      if (upper < lower) {
+        throw new Exception("Can't create box with lower bound greater than upper bound")
+      } else {
+        new Bounds(upper, lower)
+      }
+    }
+  }
+
+  def fromLines(lines: Iterator[(String, GPSBox)]): List[Continent] =
     lines.foldLeft(
-      Map.empty[String, List[(Continent.Longitudes, Continent.Latitudes)]]
-    ) { case (acc, (name, longs, lats)) =>
-        val boxes = (longs, lats)::acc.getOrElse(name, Nil)
-        acc + ((name, boxes))
+      Map.empty[String, List[GPSBox]]
+    ) { case (acc, (name, box)) =>
+        acc + ((name, box::acc.getOrElse(name, Nil)))
     }.toList.map { case (name, boxes) => Continent(name, boxes) }
 
-  def checkLocation(boxes: List[(Longitudes, Latitudes)], longitude: Double, latitude: Double): Boolean =
-    boxes.exists { case (Continent.Longitudes(east, west), Continent.Latitudes(north, south)) =>
-      longitude <= east && longitude >= west && latitude <= north && latitude >= south
+  def checkLocation(boxes: List[GPSBox], longitude: Double, latitude: Double): Boolean =
+    boxes.exists { case GPSBox(longitudes, latitudes) =>
+      longitude <= longitudes.upper && longitude >= longitudes.lower &&
+      latitude <= latitudes.upper && latitude >= latitudes.lower
     }
 }
