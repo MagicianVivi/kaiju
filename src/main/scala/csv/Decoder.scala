@@ -7,6 +7,15 @@ import scala.util.control.NonFatal
 import data.{ Continent, Job, Profession }
 
 object Decoder {
+  private[csv] def decoderHelper[A](line: CSVRecord, func: CSVRecord => A): A =
+    try {
+      func(line)
+    } catch {
+      case NonFatal(e) =>
+        println(s"Error when decoding line ${line.toList} from csv")
+        throw e
+    }
+
   private[csv] def toContinentTuple(line: CSVRecord): (String, Continent.GPSBox) =
     decoderHelper(line, line => (
       line.get("continent"),
@@ -29,13 +38,4 @@ object Decoder {
         Option(line.get("office_longitude")).map(_.toDouble)
       )
     )
-
-  private def decoderHelper[A](line: CSVRecord, func: CSVRecord => A): A =
-    try {
-      func(line)
-    } catch {
-      case NonFatal(e) =>
-        println(s"Error when decoding line ${line.toList} from csv")
-        throw e
-    }
 }
