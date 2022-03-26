@@ -8,7 +8,10 @@ final case class Continent(
 object Continent {
   final case class GPSBox(longitudes: Bounds, latitudes: Bounds)
 
-  final class Bounds(val upper: Double, val lower: Double)
+  final class Bounds(val upper: Double, val lower: Double) {
+    override def toString(): String =
+      s"Bounds($upper, $lower)"
+  }
 
   object Bounds {
     def apply(upper: Double, lower: Double): Bounds = {
