@@ -19,7 +19,6 @@ object Main extends IOApp.Simple {
       jobCounts <- Database.load(Database.jobs).use(lines =>
         IO(Job.computeCounts(lines, continents, professions))
       )
-      table = Job.tableCounts(jobCounts)
-      _ <- Table.print(table)
+      _ = Table.print(Job.tableCounts(jobCounts))
     } yield ()
 }
