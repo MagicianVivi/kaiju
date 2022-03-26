@@ -1,8 +1,12 @@
+//import NativePackagerHelper._
+
 lazy val kaiju = (project in file("."))
+  .enablePlugins(UniversalPlugin, JavaAppPackaging)
   .settings(
     organization := "org.world.domination",
     name := "kaiju",
     scalaVersion := "2.13.8",
+    version := "ex1",
     scalacOptions ++= Seq(
       "-target:11",
       "-language:higherKinds",
