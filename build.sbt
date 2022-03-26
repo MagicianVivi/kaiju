@@ -47,6 +47,8 @@ lazy val kaiju = (project in file("."))
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-effect" % "3.3.8",
       "org.apache.commons" % "commons-csv" % "1.9.0",
+      "org.log4s" %% "log4s" % "1.8.2",
+      "ch.qos.logback" % "logback-classic" % "1.2.11",
       "org.scalatest" %% "scalatest" % "3.2.11" % "test"
     )
   )

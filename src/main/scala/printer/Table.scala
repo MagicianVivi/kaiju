@@ -5,6 +5,8 @@ import cats.implicits._
 final case class Table(headers: List[String], rows: List[List[String]])
 
 object Table {
+  private[this] val logger = org.log4s.getLogger
+
   private[printer] def formatRow(row: List[String], cellSize: Int): String =
     if (row.isEmpty) {
       ""
@@ -30,6 +32,6 @@ object Table {
     )
 
     (separatorString::headersString::separatorString::rowsToDisplay)
-      .foreach(println(_))
+      .foreach(logger.info(_))
   }
 }

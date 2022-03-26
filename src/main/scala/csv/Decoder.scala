@@ -7,12 +7,14 @@ import scala.util.control.NonFatal
 import data.{ Continent, Job, Profession }
 
 object Decoder {
+  private[this] val logger = org.log4s.getLogger
+
   private[csv] def decoderHelper[A](line: CSVRecord, func: CSVRecord => A): A =
     try {
       func(line)
     } catch {
       case NonFatal(e) =>
-        println(s"Error when decoding line ${line.toList} from csv")
+        logger.error(s"Error when decoding line ${line.toList} from csv")
         throw e
     }
 
