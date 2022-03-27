@@ -1,4 +1,14 @@
-//import NativePackagerHelper._
+val http4s = Seq(
+  "http4s-ember-server",
+  "http4s-dsl"
+).map(mod => "org.http4s" %% mod % "0.23.11")
+
+val tapir = Seq(
+  "tapir-core",
+  "tapir-swagger-ui-bundle",
+  "tapir-http4s-server",
+  "tapir-json-circe"
+).map(mod => "com.softwaremill.sttp.tapir" %% mod % "1.0.0-M4")
 
 lazy val kaiju = (project in file("."))
   .enablePlugins(UniversalPlugin, JavaAppPackaging)
@@ -6,7 +16,7 @@ lazy val kaiju = (project in file("."))
     organization := "org.world.domination",
     name := "kaiju",
     scalaVersion := "2.13.8",
-    version := "ex1",
+    version := "ex3",
     scalacOptions ++= Seq(
       "-target:11",
       "-language:higherKinds",
@@ -48,11 +58,12 @@ lazy val kaiju = (project in file("."))
     ),
     Compile / console / scalacOptions --= Seq("-Wunused:imports", "-Werror"),
     resolvers += Resolver.sonatypeRepo("releases"),
-    libraryDependencies ++= Seq(
+    libraryDependencies ++= http4s ++ tapir ++ Seq(
       "org.typelevel" %% "cats-effect" % "3.3.8",
       "org.apache.commons" % "commons-csv" % "1.9.0",
       "org.log4s" %% "log4s" % "1.8.2",
       "ch.qos.logback" % "logback-classic" % "1.2.11",
       "org.scalatest" %% "scalatest" % "3.2.11" % "test"
-    )
+    ),
+    fork := true
   )

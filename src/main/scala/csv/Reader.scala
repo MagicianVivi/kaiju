@@ -3,6 +3,7 @@ package csv
 import org.apache.commons.csv.{ CSVFormat, CSVParser, CSVRecord }
 
 import scala.jdk.CollectionConverters._
+import scala.io
 
 import cats.effect.{ IO, Resource }
 
