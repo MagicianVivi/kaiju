@@ -1,5 +1,10 @@
 # Exercise 1
 
+You can download the ex1 release to run the script: https://github.com/MagicianVivi/kaiju/releases/download/ex1/kaiju-ex1.zip
+
+If you want to check out the code, please pin your git repository to the ex1 tag: https://github.com/MagicianVivi/kaiju/tree/ex1
+
+
 Fun fact, if you have a postgres instance running, you can create tables mapping to the csv columns, load them with `copy` and then run:
 
 
